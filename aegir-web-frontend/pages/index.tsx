@@ -5,6 +5,8 @@ import InstrumentsTable from "@/components/InstrumentsTable";
 import StudentInstrumentGraph from "@/components/StudentInstrumentGraph";
 import LessonsDurationGraph from "@/components/LessonDurationGraph";
 import TeacherPaymentGraph from "@/components/TeacherPaymentGraph";
+import InstrumentsOverview from "@/components/InstrumentsOverview";
+import StudentAnalytics from "@/components/StudentAnalytics";
 
 const LOGIN_URL = "http://localhost:8055/auth/login";
 const EMAIL = "test@test.com";
@@ -105,10 +107,10 @@ const HomePage: React.FC = () => {
                 Select an option from the menu to view different analytics.
               </p>
             </div>
-            <InstrumentsTable />
+            <InstrumentsOverview />
           </div>
         );
-      case "student-instruments":
+      case "student-analytics":
         return (
           <div>
             <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -119,7 +121,7 @@ const HomePage: React.FC = () => {
                 Select an option from the menu to view different analytics.
               </p>
             </div>
-            <StudentInstrumentGraph />
+            <StudentAnalytics />
           </div>
         );
       // case "lesson-duration":

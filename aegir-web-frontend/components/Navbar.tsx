@@ -109,7 +109,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {[
             { id: "home", label: "Home" },
             { id: "instruments", label: "Instruments" },
-            { id: "student-instruments", label: "Student Instruments" },
+            { id: "student-analytics", label: "Student Analytics" },
             { id: "lesson-duration", label: "Lesson Duration" },
             { id: "teacher-payments", label: "Teacher Payments" },
           ].map((item) => (
