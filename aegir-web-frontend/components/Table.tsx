@@ -6,15 +6,15 @@ type TableRow = {
   name: string;
 };
 
-// Props for Table component
+// Props for table component
 type TableProps = {
-  data: TableRow[]; // Rows
-  columns: (keyof TableRow)[]; // Columns to display
+  data: TableRow[];
+  columns: (keyof TableRow)[];
 };
 
 const Table: React.FC<TableProps> = ({ data, columns }) => {
   return (
-    <table className="min-w-full table-auto">
+    <table className="min-w-full table-auto text-black">
       <thead>
         <tr>
           {columns.map((col, idx) => (
