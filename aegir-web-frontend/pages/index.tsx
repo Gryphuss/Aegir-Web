@@ -7,6 +7,8 @@ import LessonsDurationGraph from "@/components/LessonDurationGraph";
 import TeacherPaymentGraph from "@/components/TeacherPaymentGraph";
 import InstrumentsOverview from "@/components/InstrumentsOverview";
 import StudentAnalytics from "@/components/StudentAnalytics";
+import TeacherAnalytics from "@/components/TeacherAnalytics";
+import LessonsAnalytics from "@/components/LessonAnalytics";
 
 const LOGIN_URL = "http://localhost:8055/auth/login";
 const EMAIL = "test@test.com";
@@ -124,10 +126,34 @@ const HomePage: React.FC = () => {
             <StudentAnalytics />
           </div>
         );
-      // case "lesson-duration":
-      //   return <LessonsDurationGraph />;
-      // case "teacher-payments":
-      //   return <TeacherPaymentGraph />;
+      case "teacher-analytics":
+        return (
+          <div>
+            <div className="p-6 bg-white rounded-lg shadow-lg">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                Welcome to the Dashboard!
+              </h1>
+              <p className="text-gray-600">
+                Select an option from the menu to view different analytics.
+              </p>
+            </div>
+            <TeacherAnalytics />
+          </div>
+        );
+      case "lessons-analytics":
+        return (
+          <div>
+            <div className="p-6 bg-white rounded-lg shadow-lg">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                Welcome to the Dashboard!
+              </h1>
+              <p className="text-gray-600">
+                Select an option from the menu to view different analytics.
+              </p>
+            </div>
+            <LessonsAnalytics />
+          </div>
+        );
       default:
         return (
           <div className="p-6 bg-white rounded-lg shadow-lg">
