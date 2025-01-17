@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TokenProvider, useToken } from "@/context/TokenContext";
 import Navbar from "@/components/Navbar";
-import InstrumentsTable from "@/components/InstrumentsTable";
-import StudentInstrumentGraph from "@/components/StudentInstrumentGraph";
-import LessonsDurationGraph from "@/components/LessonDurationGraph";
-import TeacherPaymentGraph from "@/components/TeacherPaymentGraph";
 import InstrumentsOverview from "@/components/InstrumentsOverview";
 import StudentAnalytics from "@/components/StudentAnalytics";
 import TeacherAnalytics from "@/components/TeacherAnalytics";
