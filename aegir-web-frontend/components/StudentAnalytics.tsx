@@ -407,39 +407,58 @@ const StudentAnalytics: React.FC = () => {
         {/* Key Metrics */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Key Metrics</CardTitle>
+            <CardTitle>Student Insights</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Total Packages</h3>
-                <p className="text-3xl font-bold">{packages.length}</p>
+                <h3 className="text-lg font-semibold">Total Students</h3>
+                <p className="text-3xl font-bold">
+                  {new Set(packages.map((p) => p.student)).size}
+                </p>
               </div>
               <div className="p-4 bg-green-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Total Lessons</h3>
-                <p className="text-3xl font-bold">{lessons.length}</p>
-              </div>
-              <div className="p-4 bg-yellow-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Attendance Rate</h3>
+                <h3 className="text-lg font-semibold">
+                  Avg Packages per Student
+                </h3>
                 <p className="text-3xl font-bold">
                   {(
-                    (lessons.filter((l) => l.status === "attended").length /
-                      lessons.length) *
-                    100
+                    packages.length /
+                    new Set(packages.map((p) => p.student)).size
                   ).toFixed(1)}
-                  %
+                </p>
+              </div>
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <h3 className="text-lg font-semibold">
+                  Multi-Instrument Students
+                </h3>
+                <p className="text-3xl font-bold">
+                  {
+                    Object.values(
+                      packages.reduce(
+                        (acc: { [key: string]: Set<number> }, pkg) => {
+                          if (!acc[pkg.student]) acc[pkg.student] = new Set();
+                          acc[pkg.student].add(pkg.instrument);
+                          return acc;
+                        },
+                        {}
+                      )
+                    ).filter((instruments) => instruments.size > 1).length
+                  }
                 </p>
               </div>
               <div className="p-4 bg-purple-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Active Students</h3>
+                <h3 className="text-lg font-semibold">
+                  Package Completion Rate
+                </h3>
                 <p className="text-3xl font-bold">
-                  {
-                    new Set(
-                      packages
-                        .filter((p) => p.status === "active")
-                        .map((p) => p.student)
-                    ).size
-                  }
+                  {(
+                    packageProgress.reduce(
+                      (sum, pkg) => sum + pkg.completionRate,
+                      0
+                    ) / packageProgress.length
+                  ).toFixed(1)}
+                  %
                 </p>
               </div>
             </div>

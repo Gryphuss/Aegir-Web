@@ -7,7 +7,7 @@ import TeacherAnalytics from "@/components/TeacherAnalytics";
 import LessonsAnalytics from "@/components/LessonAnalytics";
 import FinancialOverview from "@/components/FinancialOverview";
 import PackageManagement from "@/components/PackageManagement";
-
+import HomeSection from "@/components/HomeSection";
 const LOGIN_URL = "http://localhost:8055/auth/login";
 const EMAIL = "test@test.com";
 const PASSWORD = "interview";
@@ -87,99 +87,122 @@ const HomePage: React.FC = () => {
     switch (currentPage) {
       case "home":
         return (
-          <div className="p-6 bg-white rounded-lg shadow-lg">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">
-              Welcome to the Dashboard!
-            </h1>
-            <p className="text-gray-600">
-              Select an option from the menu to view different analytics.
-            </p>
-          </div>
+          // <div className="p-6 bg-white rounded-lg shadow-lg">
+          //   <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          //     Welcome to Music School Analytics
+          //   </h1>
+          //   <p className="text-gray-600">
+          //     Your comprehensive dashboard for managing and analyzing music
+          //     school operations. Navigate through different sections to explore
+          //     detailed insights about instruments, students, teachers, lessons,
+          //     and financial data.
+          //   </p>
+          // </div>
+          <HomeSection />
         );
+
       case "instruments":
         return (
           <div>
-            <div className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Welcome to the Dashboard!
+                Instrument Management
               </h1>
               <p className="text-gray-600">
-                Select an option from the menu to view different analytics.
+                Track the distribution and popularity of different instruments
+                across the school. View instrument allocation among students and
+                teachers, and see the preferences.
               </p>
             </div>
             <InstrumentsOverview />
           </div>
         );
+
       case "student-analytics":
         return (
           <div>
-            <div className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Welcome to the Dashboard!
+                Student Analytics Dashboard
               </h1>
               <p className="text-gray-600">
-                Select an option from the menu to view different analytics.
+                Gain insights into student performance, progress, and
+                engagement. Monitor package utilization, track learning paths,
+                and analyze student distribution across different instruments
+                and programs.
               </p>
             </div>
             <StudentAnalytics />
           </div>
         );
+
       case "teacher-analytics":
         return (
           <div>
-            <div className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Welcome to the Dashboard!
+                Teacher Performance Analytics
               </h1>
               <p className="text-gray-600">
-                Select an option from the menu to view different analytics.
+                Evaluate teacher workload, student allocation, and lesson
+                effectiveness, according to each teachers performance.
               </p>
             </div>
             <TeacherAnalytics />
           </div>
         );
+
       case "lessons-analytics":
         return (
           <div>
-            <div className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Welcome to the Dashboard!
+                Lesson Analytics Center
               </h1>
               <p className="text-gray-600">
-                Select an option from the menu to view different analytics.
+                Monitor lesson scheduling, attendance, and completion rates.
+                Analyze lesson effectiveness, track student in different lesson
+                types, and optimize scheduling to maximize learning outcomes.
               </p>
             </div>
             <LessonsAnalytics />
           </div>
         );
+
       case "financial-overview":
         return (
           <div>
-            <div className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Welcome to the Dashboard!
+                Financial Performance Overview
               </h1>
               <p className="text-gray-600">
-                Select an option from the menu to view different analytics.
+                Track revenue streams, analyze payment patterns, and monitor
+                financial performance. Get insights into package sales, payment
+                trends, and financial metrics.
               </p>
             </div>
             <FinancialOverview />
           </div>
         );
+
       case "package-management":
         return (
           <div>
-            <div className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Welcome to the Dashboard!
+                Package Management System
               </h1>
               <p className="text-gray-600">
-                Select an option from the menu to view different analytics.
+                Manage and track lesson packages, monitor usage rates, and
+                analyze package performance. View detailed insights into package
+                popularity, completion rates, and student preferences.
               </p>
             </div>
             <PackageManagement />
           </div>
         );
+
       default:
         return (
           <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -187,7 +210,8 @@ const HomePage: React.FC = () => {
               Page Not Found
             </h1>
             <p className="text-gray-600">
-              The requested page could not be found.
+              The requested page could not be found. Please select a valid
+              option from the navigation menu.
             </p>
           </div>
         );

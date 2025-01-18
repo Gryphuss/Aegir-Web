@@ -11,9 +11,9 @@ const Navbar: React.FC<NavbarProps> = ({
   setIsSidebarOpen,
   setCurrentPage,
 }) => {
-  const [isMobile, setIsMobile] = useState<boolean>(false); // mobile state
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [activePage, setActivePage] = useState<string>("home");
 
-  // window resize for mobile
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
@@ -30,19 +30,54 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handlePageChange = (page: string) => {
+    setActivePage(page);
     setCurrentPage(page);
     if (isMobile) {
       setIsSidebarOpen(false);
     }
   };
 
+  const navItems = [
+    { id: "home", label: "Home", icon: "/home.png" },
+    {
+      id: "instruments",
+      label: "Instruments",
+      icon: "/instrument.png",
+    },
+    {
+      id: "student-analytics",
+      label: "Students",
+      icon: "/student.png",
+    },
+    {
+      id: "teacher-analytics",
+      label: "Teachers",
+      icon: "/teacher.png",
+    },
+    {
+      id: "lessons-analytics",
+      label: "Lessons",
+      icon: "/lesson.png",
+    },
+    {
+      id: "package-management",
+      label: "Packages",
+      icon: "/package.png",
+    },
+    {
+      id: "financial-overview",
+      label: "Financials",
+      icon: "/finance.png",
+    },
+  ];
+
   return (
     <>
-      {/* Hamburger Menu*/}
+      {/* Hamburger Menu */}
       {isMobile && (
         <button
           onClick={toggleNavbar}
-          className="fixed top-4 left-4 z-50 text-white bg-gray-800 p-2 rounded-md focus:outline-none"
+          className="fixed top-4 left-4 z-50 text-white bg-gray-800 p-2 rounded-lg focus:outline-none hover:bg-gray-700 transition-colors duration-200"
         >
           {isSidebarOpen ? (
             <svg
@@ -83,13 +118,13 @@ const Navbar: React.FC<NavbarProps> = ({
             ? `top-0 left-0 w-full transform ${
                 isSidebarOpen ? "translate-y-0" : "-translate-y-full"
               }`
-            : `top-0 left-0 h-full ${isSidebarOpen ? "w-64" : "w-16"}`
-        } bg-gray-800 text-white transition-all duration-300 ease-in-out z-40`}
+            : `top-0 left-0 h-full ${isSidebarOpen ? "w-64" : "w-20"}`
+        } bg-gray-800 text-white transition-all duration-300 ease-in-out z-40 shadow-lg`}
       >
-        {/* Desktop Arrow */}
+        {/* Desktop Logo/Toggle */}
         {!isMobile && (
           <div
-            className="flex items-center p-4 cursor-pointer"
+            className="flex items-center p-4 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
             onClick={toggleNavbar}
           >
             <img
@@ -99,34 +134,56 @@ const Navbar: React.FC<NavbarProps> = ({
               }`}
               aria-hidden="true"
             />
-            <span className={`ml-2 ${isSidebarOpen ? "block" : "hidden"}`}>
+            <span
+              className={`ml-2 font-semibold text-lg ${
+                isSidebarOpen ? "block" : "hidden"
+              }`}
+            >
               Menu
             </span>
           </div>
         )}
 
+        {/* Navigation Items */}
         <nav className={`mt-4 ${isMobile ? "pt-16" : ""}`}>
-          {[
-            { id: "home", label: "Home" },
-            { id: "instruments", label: "Instruments" },
-            { id: "student-analytics", label: "Student Analytics" },
-            { id: "teacher-analytics", label: "Teacher Analytics" },
-            { id: "lessons-analytics", label: "Lesson Analytics" },
-            { id: "financial-overview", label: "Financial Overview" },
-            { id: "package-management", label: "Package Management" },
-          ].map((item) => (
+          {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handlePageChange(item.id)}
-              className={`w-full text-left p-4 hover:bg-teal-500 transition-colors duration-200 ${
-                !isSidebarOpen && !isMobile ? "justify-center items-center" : ""
-              }`}
+              className={`w-full ${
+                isMobile ? "text-center" : "text-left"
+              } p-4 hover:bg-teal-600 transition-colors duration-200 ${
+                activePage === item.id ? "bg-teal-700" : ""
+              } focus:outline-none group`}
             >
-              <span
-                className={!isSidebarOpen && !isMobile ? "hidden" : "block"}
-              >
-                {item.label}
-              </span>
+              {!isSidebarOpen && !isMobile ? (
+                <div className="flex justify-center items-center relative">
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    className="w-6 h-6 object-contain filter brightness-0 invert"
+                  />
+                  {/* Tooltip for collapsed state */}
+                  <div className="absolute left-20 hidden group-hover:block bg-gray-900 text-white px-2 py-1 rounded-md text-sm whitespace-nowrap">
+                    {item.label}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`flex ${
+                    isMobile ? "justify-center" : ""
+                  } items-center space-x-3`}
+                >
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    className="w-6 h-6 object-contain filter brightness-0 invert"
+                  />
+                  <span className="font-medium tracking-wide">
+                    {item.label}
+                  </span>
+                </div>
+              )}
             </button>
           ))}
         </nav>

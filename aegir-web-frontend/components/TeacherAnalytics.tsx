@@ -17,15 +17,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
+// Constants
+const TEACHER_ROLE_ID = "83c708d8-90c4-4835-b066-2d36ec66ac50";
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884d8",
+  "#82ca9d",
+];
+
+// API Endpoints
+const API_URL_USERS = "http://localhost:8055/users";
+const API_URL_LESSONS = "http://localhost:8055/items/lessons";
+const API_URL_STUDENT_TEACHER =
+  "http://localhost:8055/items/student_teacher_relations";
+const API_URL_INSTRUMENTS = "http://localhost:8055/items/instruments";
+
+// Interfaces
 interface User {
   id: string;
   first_name: string;
   last_name: string;
   email: string;
-  status: string;
-  role: {
-    name: string;
-  };
+  role: string;
 }
 
 interface Lesson {
@@ -43,24 +59,27 @@ interface TeacherStudent {
   instrument: number;
 }
 
-const API_URL_USERS = "http://localhost:8055/users";
-const API_URL_LESSONS = "http://localhost:8055/items/lessons";
-const API_URL_STUDENT_TEACHER =
-  "http://localhost:8055/items/student_teacher_relations";
-const API_URL_INSTRUMENTS = "http://localhost:8055/items/instruments";
-
-const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884d8",
-  "#82ca9d",
-];
+interface TeacherStats {
+  id: string;
+  name: string;
+  totalStudents: number;
+  totalLessons: number;
+  completedLessons: number;
+  cancelledLessons: number;
+  pendingLessons: number;
+  instruments: string[];
+  students: {
+    student: User | null;
+    instrument: string;
+  }[];
+  averageCompletionRate: number;
+}
 
 const TeacherAnalytics: React.FC = () => {
+  // State
   const { token } = useToken();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<{ [key: string]: User }>({});
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [teacherRelations, setTeacherRelations] = useState<TeacherStudent[]>(
@@ -71,9 +90,14 @@ const TeacherAnalytics: React.FC = () => {
     new Set()
   );
 
+  // Data Fetching
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
+      if (!token) {
+        setError("Authentication token not found");
+        setLoading(false);
+        return;
+      }
 
       try {
         const [
@@ -96,31 +120,39 @@ const TeacherAnalytics: React.FC = () => {
           }),
         ]);
 
+        // const [usersData, lessonsData, relationsData, instrumentsData] =
+        //   await Promise.all([
+        //     usersResponse.json(),
+        //     lessonsResponse.json(),
+        //     relationsResponse.json(),
+        //     instrumentsResponse.json(),
+        //   ]);
+
         const usersData = await usersResponse.json();
         const lessonsData = await lessonsResponse.json();
-        const relationsData = await relationsResponse.json();
         const instrumentsData = await instrumentsResponse.json();
+        const relationsData = await relationsResponse.json();
 
         // Process users
         const usersMap: { [key: string]: User } = {};
         usersData.data.forEach((user: User) => {
           usersMap[user.id] = user;
         });
-        setUsers(usersMap);
-
-        setLessons(lessonsData.data);
-        setTeacherRelations(relationsData.data);
 
         // Process instruments
         const instrumentsMap: { [key: number]: string } = {};
         instrumentsData.data.forEach((instrument: any) => {
           instrumentsMap[instrument.id] = instrument.name;
         });
-        setInstruments(instrumentsMap);
 
+        setUsers(usersMap);
+        setLessons(lessonsData.data || []);
+        setTeacherRelations(relationsData.data || []);
+        setInstruments(instrumentsMap);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError("Failed to fetch data. Please try again later.");
         setLoading(false);
       }
     };
@@ -128,6 +160,7 @@ const TeacherAnalytics: React.FC = () => {
     fetchData();
   }, [token]);
 
+  // Event Handlers
   const toggleTeacher = (teacherId: string) => {
     const newExpanded = new Set(expandedTeachers);
     if (newExpanded.has(teacherId)) {
@@ -138,6 +171,52 @@ const TeacherAnalytics: React.FC = () => {
     setExpandedTeachers(newExpanded);
   };
 
+  // Process Teacher Statistics
+  const teachers = Object.values(users).filter(
+    (user) => user.role === TEACHER_ROLE_ID
+  );
+
+  const teacherStats = teachers.map((teacher) => {
+    const teacherLessons = lessons.filter(
+      (lesson) => lesson.teacher === teacher.id
+    );
+    const teacherStudents = teacherRelations.filter(
+      (relation) => relation.teacher === teacher.id
+    );
+
+    const lessonsByStatus = teacherLessons.reduce(
+      (acc: { [key: string]: number }, lesson) => {
+        acc[lesson.status] = (acc[lesson.status] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
+
+    const uniqueInstruments = [
+      ...new Set(teacherStudents.map((relation) => relation.instrument)),
+    ];
+
+    return {
+      id: teacher.id,
+      name: `${teacher.first_name} ${teacher.last_name}`,
+      totalStudents: teacherStudents.length,
+      totalLessons: teacherLessons.length,
+      completedLessons: lessonsByStatus["attended"] || 0,
+      cancelledLessons: lessonsByStatus["cancelled"] || 0,
+      pendingLessons: lessonsByStatus["pending"] || 0,
+      instruments: uniqueInstruments.map((id) => instruments[id] || "Unknown"),
+      students: teacherStudents.map((relation) => ({
+        student: users[relation.student] || null,
+        instrument: instruments[relation.instrument] || "Unknown",
+      })),
+      averageCompletionRate:
+        teacherLessons.length > 0
+          ? ((lessonsByStatus["attended"] || 0) / teacherLessons.length) * 100
+          : 0,
+    };
+  });
+
+  // Loading State
   if (loading) {
     return (
       <div className="container mx-auto py-8">
@@ -145,63 +224,29 @@ const TeacherAnalytics: React.FC = () => {
           <Skeleton className="w-full h-96" />
           <Skeleton className="w-full h-96" />
           <Skeleton className="w-full h-96 lg:col-span-2" />
+          <Skeleton className="w-full h-48 lg:col-span-2" />
         </div>
       </div>
     );
   }
 
-  // Prep the data
-  const teacherStats = Object.values(users)
-    .filter((user) => user.role?.name?.toLowerCase().includes("teacher"))
-    .map((teacher) => {
-      const teacherLessons = lessons.filter(
-        (lesson) => lesson.teacher === teacher.id
-      );
-      const teacherStudents = teacherRelations.filter(
-        (relation) => relation.teacher === teacher.id
-      );
-      const instrumentsTeaching = [
-        ...new Set(
-          teacherStudents.map((relation) => instruments[relation.instrument])
-        ),
-      ];
-
-      const lessonStatusCount = teacherLessons.reduce(
-        (acc: { [key: string]: number }, lesson) => {
-          acc[lesson.status] = (acc[lesson.status] || 0) + 1;
-          return acc;
-        },
-        {}
-      );
-
-      const completionRate =
-        teacherLessons.length > 0
-          ? ((lessonStatusCount["attended"] || 0) / teacherLessons.length) * 100
-          : 0;
-
-      return {
-        id: teacher.id,
-        name: `${teacher.first_name} ${teacher.last_name}`,
-        totalLessons: teacherLessons.length,
-        totalStudents: teacherStudents.length,
-        instrumentsTaught: instrumentsTeaching,
-        completionRate,
-        lessonStatusCount,
-        students: teacherStudents.map((relation) => ({
-          name: users[relation.student]
-            ? `${users[relation.student].first_name} ${
-                users[relation.student].last_name
-              }`
-            : "Unknown Student",
-          instrument: instruments[relation.instrument] || "Unknown Instrument",
-        })),
-      };
-    });
+  // Error State
+  if (error) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-red-500 text-center">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Teacher Workload Chart */}
+        {/* Workload Distribution Chart */}
         <Card>
           <CardHeader>
             <CardTitle>Teacher Workload Distribution</CardTitle>
@@ -211,6 +256,7 @@ const TeacherAnalytics: React.FC = () => {
               <BarChart
                 data={teacherStats.map((teacher) => ({
                   name: teacher.name,
+                  students: teacher.totalStudents,
                   lessons: teacher.totalLessons,
                 }))}
                 margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
@@ -224,25 +270,46 @@ const TeacherAnalytics: React.FC = () => {
                 />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="lessons" fill="#0088FE" name="Total Lessons" />
+                <Legend />
+                <Bar dataKey="students" fill="#0088FE" name="Students" />
+                <Bar dataKey="lessons" fill="#00C49F" name="Lessons" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Teacher Instruments Distribution */}
+        {/* Overall Lesson Status Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle>Students per Teacher</CardTitle>
+            <CardTitle>Overall Lesson Status Distribution</CardTitle>
           </CardHeader>
           <CardContent className="h-96">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={teacherStats.map((teacher) => ({
-                    name: teacher.name,
-                    value: teacher.totalStudents,
-                  }))}
+                  data={[
+                    {
+                      name: "Completed",
+                      value: teacherStats.reduce(
+                        (sum, t) => sum + t.completedLessons,
+                        0
+                      ),
+                    },
+                    {
+                      name: "Cancelled",
+                      value: teacherStats.reduce(
+                        (sum, t) => sum + t.cancelledLessons,
+                        0
+                      ),
+                    },
+                    {
+                      name: "Pending",
+                      value: teacherStats.reduce(
+                        (sum, t) => sum + t.pendingLessons,
+                        0
+                      ),
+                    },
+                  ]}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -252,7 +319,7 @@ const TeacherAnalytics: React.FC = () => {
                   outerRadius={130}
                   dataKey="value"
                 >
-                  {teacherStats.map((entry, index) => (
+                  {[0, 1, 2].map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -265,7 +332,7 @@ const TeacherAnalytics: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Teacher Details Table */}
+        {/* Detailed Teacher Performance Table */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Teacher Performance Details</CardTitle>
@@ -276,10 +343,10 @@ const TeacherAnalytics: React.FC = () => {
                 <thead>
                   <tr className="border-b bg-gray-50">
                     <th className="py-3 px-4 text-left">Teacher</th>
-                    <th className="py-3 px-4 text-right">Total Students</th>
-                    <th className="py-3 px-4 text-right">Total Lessons</th>
-                    <th className="py-3 px-4 text-left">Instruments</th>
-                    <th className="py-3 px-4 text-right">Completion Rate</th>
+                    <th className="py-3 px-4 text-center">Students</th>
+                    <th className="py-3 px-4 text-center">Total Lessons</th>
+                    <th className="py-3 px-4 text-center">Completion Rate</th>
+                    <th className="py-3 px-4 text-center">Instruments</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -288,7 +355,6 @@ const TeacherAnalytics: React.FC = () => {
 
                     return (
                       <React.Fragment key={teacher.id}>
-                        {/* Teacher Summary Row */}
                         <tr
                           className="border-b hover:bg-gray-50 cursor-pointer"
                           onClick={() => toggleTeacher(teacher.id)}
@@ -303,61 +369,104 @@ const TeacherAnalytics: React.FC = () => {
                               <span>{teacher.name}</span>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-right">
+                          <td className="py-3 px-4 text-center">
                             {teacher.totalStudents}
                           </td>
-                          <td className="py-3 px-4 text-right">
+                          <td className="py-3 px-4 text-center">
                             {teacher.totalLessons}
                           </td>
-                          <td className="py-3 px-4">
-                            {teacher.instrumentsTaught.join(", ")}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <div className="flex items-center justify-end">
+                          <td className="py-3 px-4 text-center">
+                            <div className="flex items-center justify-center">
                               <div className="w-24 bg-gray-200 rounded-full h-2.5 mr-2">
                                 <div
                                   className="bg-blue-600 h-2.5 rounded-full"
                                   style={{
-                                    width: `${teacher.completionRate}%`,
+                                    width: `${teacher.averageCompletionRate}%`,
                                   }}
-                                ></div>
+                                />
                               </div>
-                              {teacher.completionRate.toFixed(1)}%
+                              <span>
+                                {teacher.averageCompletionRate.toFixed(1)}%
+                              </span>
                             </div>
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            {teacher.instruments.join(", ")}
                           </td>
                         </tr>
 
-                        {/* Expanded Student Details */}
                         {isExpanded && (
                           <tr>
                             <td colSpan={5} className="bg-gray-50 p-4">
-                              <table className="w-full">
-                                <thead>
-                                  <tr className="border-b border-gray-200">
-                                    <th className="py-2 px-4 text-left">
-                                      Student
-                                    </th>
-                                    <th className="py-2 px-4 text-left">
-                                      Instrument
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {teacher.students.map((student, index) => (
-                                    <tr
-                                      key={index}
-                                      className="border-b border-gray-200"
-                                    >
-                                      <td className="py-2 px-4">
-                                        {student.name}
-                                      </td>
-                                      <td className="py-2 px-4">
-                                        {student.instrument}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                              <div className="space-y-4">
+                                {/* Lesson Status Summary */}
+                                <div className="grid grid-cols-3 gap-4">
+                                  <div className="bg-green-50 p-4 rounded-lg">
+                                    <p className="text-sm text-gray-500">
+                                      Completed Lessons
+                                    </p>
+                                    <p className="text-2xl font-bold">
+                                      {teacher.completedLessons}
+                                    </p>
+                                  </div>
+                                  <div className="bg-red-50 p-4 rounded-lg">
+                                    <p className="text-sm text-gray-500">
+                                      Cancelled Lessons
+                                    </p>
+                                    <p className="text-2xl font-bold">
+                                      {teacher.cancelledLessons}
+                                    </p>
+                                  </div>
+                                  <div className="bg-yellow-50 p-4 rounded-lg">
+                                    <p className="text-sm text-gray-500">
+                                      Pending Lessons
+                                    </p>
+                                    <p className="text-2xl font-bold">
+                                      {teacher.pendingLessons}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Student List */}
+                                <div>
+                                  <h4 className="font-medium mb-2">
+                                    Students & Instruments
+                                  </h4>
+                                  <div className="bg-white rounded-lg shadow-sm">
+                                    <table className="w-full">
+                                      <thead>
+                                        <tr className="border-b">
+                                          <th className="py-2 px-4 text-left">
+                                            Student
+                                          </th>
+                                          <th className="py-2 px-4 text-left">
+                                            Instrument
+                                          </th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {teacher.students.map(
+                                          (studentInfo, index) => (
+                                            <tr
+                                              key={index}
+                                              className="border-b"
+                                            >
+                                              <td className="py-2 px-4">
+                                                {studentInfo.student
+                                                  ? `${studentInfo.student.first_name} ${studentInfo.student.last_name}`
+                                                  : "Unknown Student"}
+                                              </td>
+                                              <td className="py-2 px-4">
+                                                {studentInfo.instrument}
+                                              </td>
+                                            </tr>
+                                          )
+                                        )}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         )}
@@ -366,53 +475,6 @@ const TeacherAnalytics: React.FC = () => {
                   })}
                 </tbody>
               </table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Key Metrics */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Key Teaching Metrics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Total Teachers</h3>
-                <p className="text-3xl font-bold">{teacherStats.length}</p>
-              </div>
-              <div className="p-4 bg-green-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Total Lessons</h3>
-                <p className="text-3xl font-bold">
-                  {teacherStats.reduce(
-                    (sum, teacher) => sum + teacher.totalLessons,
-                    0
-                  )}
-                </p>
-              </div>
-              <div className="p-4 bg-yellow-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Avg Students/Teacher</h3>
-                <p className="text-3xl font-bold">
-                  {(
-                    teacherStats.reduce(
-                      (sum, teacher) => sum + teacher.totalStudents,
-                      0
-                    ) / teacherStats.length
-                  ).toFixed(1)}
-                </p>
-              </div>
-              <div className="p-4 bg-purple-50 rounded-lg">
-                <h3 className="text-lg font-semibold">Avg Completion Rate</h3>
-                <p className="text-3xl font-bold">
-                  {(
-                    teacherStats.reduce(
-                      (sum, teacher) => sum + teacher.completionRate,
-                      0
-                    ) / teacherStats.length
-                  ).toFixed(1)}
-                  %
-                </p>
-              </div>
             </div>
           </CardContent>
         </Card>
