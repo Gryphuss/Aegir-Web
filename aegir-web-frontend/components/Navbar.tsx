@@ -112,6 +112,8 @@ const Navbar: React.FC<NavbarProps> = ({
             { id: "student-analytics", label: "Student Analytics" },
             { id: "teacher-analytics", label: "Teacher Analytics" },
             { id: "lessons-analytics", label: "Lesson Analytics" },
+            { id: "financial-overview", label: "Financial Overview" },
+            { id: "package-management", label: "Package Management" },
           ].map((item) => (
             <button
               key={item.id}

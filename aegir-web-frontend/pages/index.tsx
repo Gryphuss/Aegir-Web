@@ -5,6 +5,8 @@ import InstrumentsOverview from "@/components/InstrumentsOverview";
 import StudentAnalytics from "@/components/StudentAnalytics";
 import TeacherAnalytics from "@/components/TeacherAnalytics";
 import LessonsAnalytics from "@/components/LessonAnalytics";
+import FinancialOverview from "@/components/FinancialOverview";
+import PackageManagement from "@/components/PackageManagement";
 
 const LOGIN_URL = "http://localhost:8055/auth/login";
 const EMAIL = "test@test.com";
@@ -148,6 +150,34 @@ const HomePage: React.FC = () => {
               </p>
             </div>
             <LessonsAnalytics />
+          </div>
+        );
+      case "financial-overview":
+        return (
+          <div>
+            <div className="p-6 bg-white rounded-lg shadow-lg">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                Welcome to the Dashboard!
+              </h1>
+              <p className="text-gray-600">
+                Select an option from the menu to view different analytics.
+              </p>
+            </div>
+            <FinancialOverview />
+          </div>
+        );
+      case "package-management":
+        return (
+          <div>
+            <div className="p-6 bg-white rounded-lg shadow-lg">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                Welcome to the Dashboard!
+              </h1>
+              <p className="text-gray-600">
+                Select an option from the menu to view different analytics.
+              </p>
+            </div>
+            <PackageManagement />
           </div>
         );
       default:
