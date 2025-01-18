@@ -51,16 +51,17 @@ cd aegir-web-backend
 docker compose up
 ```
 
-3. Start the Frontend
+3. Start the Frontend with its dependencies
 
 ```bash
 cd ..
 cd aegir-web-frontend
 npm install
+npm run dev
 
 ```
 
-4. Access the application on
+5. Access the application on
 
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:8055`
