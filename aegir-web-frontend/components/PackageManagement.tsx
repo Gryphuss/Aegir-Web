@@ -18,38 +18,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronRight } from "lucide-react";
-
-interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  status: string;
-  role: {
-    id: string;
-    name: string;
-  };
-}
-
-interface Package {
-  id: number;
-  name: string;
-  student: string;
-  instrument: number;
-  duration: number;
-  lessons_quota: number;
-  status: string;
-  start_datetime: string;
-  end_datetime: string;
-  remarks: string;
-}
-
-interface Lesson {
-  id: number;
-  package: number;
-  status: string;
-  start_datetime: string;
-}
+import User from "@/interfaces/User";
+import Package from "@/interfaces/Package";
+import Lesson from "@/interfaces/Lesson";
 
 const API_URL_USERS = "http://localhost:8055/users";
 const API_URL_PACKAGES = "http://localhost:8055/items/packages";

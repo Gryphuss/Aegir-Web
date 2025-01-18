@@ -4,27 +4,9 @@ import { Music, Users, BookOpen } from "lucide-react";
 import { useToken } from "@/context/TokenContext";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Role {
-  id: string;
-  name: string;
-}
-
-interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-}
-
-interface Stats {
-  teacherCount: number;
-  studentCount: number;
-  instrumentCount: number;
-  monthlyLessons: number;
-  totalPackages: number;
-  totalRevenue: number;
-}
+import Role from "@/interfaces/Role";
+import User from "@/interfaces/User";
+import Stats from "@/interfaces/Stats";
 
 const API_URL_USERS = "http://localhost:8055/users";
 const API_URL_ROLES = "http://localhost:8055/roles";

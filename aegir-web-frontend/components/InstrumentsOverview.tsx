@@ -15,12 +15,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface InstrumentData {
-  name: string;
-  students: number;
-  teachers: number;
-}
+import InstrumentData from "@/interfaces/InstrumentData";
 
 const COLORS = [
   "#0088FE",

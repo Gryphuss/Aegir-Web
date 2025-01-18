@@ -17,6 +17,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
+import User from "@/interfaces/User";
+import Lesson from "@/interfaces/Lesson";
+import TeacherStats from "@/interfaces/TeacherStats";
+import TeacherStudent from "@/interfaces/TeacherStudent";
+
 // Constants
 const TEACHER_ROLE_ID = "83c708d8-90c4-4835-b066-2d36ec66ac50";
 const COLORS = [
@@ -34,46 +39,6 @@ const API_URL_LESSONS = "http://localhost:8055/items/lessons";
 const API_URL_STUDENT_TEACHER =
   "http://localhost:8055/items/student_teacher_relations";
 const API_URL_INSTRUMENTS = "http://localhost:8055/items/instruments";
-
-// Interfaces
-interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-}
-
-interface Lesson {
-  id: number;
-  teacher: string;
-  start_datetime: string;
-  status: string;
-  package: number;
-}
-
-interface TeacherStudent {
-  id: number;
-  teacher: string;
-  student: string;
-  instrument: number;
-}
-
-interface TeacherStats {
-  id: string;
-  name: string;
-  totalStudents: number;
-  totalLessons: number;
-  completedLessons: number;
-  cancelledLessons: number;
-  pendingLessons: number;
-  instruments: string[];
-  students: {
-    student: User | null;
-    instrument: string;
-  }[];
-  averageCompletionRate: number;
-}
 
 const TeacherAnalytics: React.FC = () => {
   // State

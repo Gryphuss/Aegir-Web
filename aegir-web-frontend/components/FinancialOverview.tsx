@@ -19,35 +19,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
-interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  status: string;
-  role: {
-    id: string;
-    name: string;
-  };
-}
-
-interface Payment {
-  id: number;
-  payment_id: string;
-  currency: string;
-  rate: number;
-  payment_date: string;
-  package: number;
-}
-
-interface Package {
-  id: number;
-  name: string;
-  student: string;
-  instrument: number;
-  duration: number;
-  status: string;
-}
+import User from "@/interfaces/User";
+import Payment from "@/interfaces/Payment";
+import Package from "@/interfaces/Package";
 
 interface Instrument {
   id: number;

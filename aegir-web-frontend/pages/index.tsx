@@ -106,7 +106,7 @@ const HomePage: React.FC = () => {
           <div>
             <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Instrument Management
+                Instruments
               </h1>
               <p className="text-gray-600">
                 Track the distribution and popularity of different instruments
@@ -123,7 +123,7 @@ const HomePage: React.FC = () => {
           <div>
             <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Student Analytics Dashboard
+                Student Analytics
               </h1>
               <p className="text-gray-600">
                 Gain insights into student performance, progress, and
@@ -141,7 +141,7 @@ const HomePage: React.FC = () => {
           <div>
             <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Teacher Performance Analytics
+                Teacher Analytics
               </h1>
               <p className="text-gray-600">
                 Evaluate teacher workload, student allocation, and lesson
@@ -157,7 +157,7 @@ const HomePage: React.FC = () => {
           <div>
             <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Lesson Analytics Center
+                Lesson Analytics
               </h1>
               <p className="text-gray-600">
                 Monitor lesson scheduling, attendance, and completion rates.
@@ -174,7 +174,7 @@ const HomePage: React.FC = () => {
           <div>
             <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Financial Performance Overview
+                Financial Overview
               </h1>
               <p className="text-gray-600">
                 Track revenue streams, analyze payment patterns, and monitor
@@ -191,7 +191,7 @@ const HomePage: React.FC = () => {
           <div>
             <div className="p-6 bg-white rounded-lg shadow-lg mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                Package Management System
+                Packages
               </h1>
               <p className="text-gray-600">
                 Manage and track lesson packages, monitor usage rates, and
