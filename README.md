@@ -48,12 +48,14 @@ cd Aegir-Web
 
 ```bash
 cd aegir-web-backend
+cd directus
 docker compose up
 ```
 
 3. Start the Frontend with its dependencies
 
 ```bash
+cd ..
 cd ..
 cd aegir-web-frontend
 npm install
